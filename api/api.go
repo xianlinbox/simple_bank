@@ -15,7 +15,8 @@ func NewServer(store *db.Queries) *ApiServer {
 	server := &ApiServer{
 		store: store,
 	}
-	router.POST("/accounts", server.createAccount)
+	router.POST("/accounts", server.CreateAccount)
+	router.GET("/accounts", server.ListAccounts)
 	server.router = router
 	return server
 }

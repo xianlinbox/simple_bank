@@ -12,7 +12,7 @@ type createAccountRequest struct {
 	Currency string `json:"currency" binding:"required,oneof=USD EUR"`
 }
 
-func  (server *ApiServer) createAccount(c *gin.Context) {
+func  (server *ApiServer) CreateAccount(c *gin.Context) {
 	var req createAccountRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -33,14 +33,14 @@ func  (server *ApiServer) createAccount(c *gin.Context) {
 	c.JSON(http.StatusOK, account)
 }
 
-// func (server *ApiServer) getAccountByID(c *gin.Context, id int64) {
+func (server *ApiServer) ListAccounts(c *gin.Context) {
 
-// 	account, err := server.store.GetAccount(c, id)
+	accouns, err := server.store.ListAccounts(c)
 
-// 	if err != nil {
-// 		c.JSON(http.StatusInternalServerError, errorResponse(err))
-// 		return		
-// 	}
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, errorResponse(err))
+		return		
+	}
 
-// 	return c.JSON(http.StatusOK, account)
-// }
+	c.JSON(http.StatusOK, accouns)
+}

@@ -20,4 +20,7 @@ sqlc:
 test:
 	go test -v --cover ./...
 
+start-server:
+	go run main.go
+
 .PHONY: startPG createdb removedb

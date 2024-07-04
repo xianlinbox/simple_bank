@@ -2,6 +2,8 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/go-playground/validator/v10"
 	db "github.com/xianlinbox/simple_bank/db/sqlc"
 )
 
@@ -15,8 +17,12 @@ func NewServer(store db.Store) *ApiServer {
 	server := &ApiServer{
 		store: store,
 	}
+	if engine,ok := binding.Validator.Engine().(*validator.Validate); ok {
+		engine.RegisterValidation("positiveAccountID", validateAccountID)
+	}
 	router.POST("/accounts", server.CreateAccount)
 	router.GET("/accounts", server.ListAccounts)
+	router.GET("/accounts/:id", server.GetAccount)
 	server.router = router
 	return server
 }

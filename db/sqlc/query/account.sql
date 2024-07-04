@@ -14,7 +14,7 @@ INSERT INTO account (
 )
 RETURNING *;
 
--- name: updateAccount :exec
+-- name: UpdateAccount :exec
 UPDATE account
   set balance = $2
 WHERE id = $1;

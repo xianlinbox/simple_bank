@@ -6,11 +6,11 @@ import (
 )
 
 type ApiServer struct {
-	store *db.Queries
+	store db.Store
 	router *gin.Engine
 }
 
-func NewServer(store *db.Queries) *ApiServer {	
+func NewServer(store db.Store) *ApiServer {	
 	router := gin.Default()
 	server := &ApiServer{
 		store: store,

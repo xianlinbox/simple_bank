@@ -96,18 +96,18 @@ func (q *Queries) ListAccounts(ctx context.Context) ([]Account, error) {
 	return items, nil
 }
 
-const updateAccount = `-- name: updateAccount :exec
+const updateAccount = `-- name: UpdateAccount :exec
 UPDATE account
   set balance = $2
 WHERE id = $1
 `
 
-type updateAccountParams struct {
+type UpdateAccountParams struct {
 	ID      int64
 	Balance int64
 }
 
-func (q *Queries) updateAccount(ctx context.Context, arg updateAccountParams) error {
+func (q *Queries) UpdateAccount(ctx context.Context, arg UpdateAccountParams) error {
 	_, err := q.db.Exec(ctx, updateAccount, arg.ID, arg.Balance)
 	return err
 }

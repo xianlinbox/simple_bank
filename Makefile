@@ -17,10 +17,14 @@ migratedown:
 sqlc:
 	sqlc generate
 
+generateStoreMock:
+	mockgen -destination db/sqlc/mock/store.go -package mockdb -build_flags=--mod=mod github.com/xianlinbox/simple_bank/db/sqlc Store
+
 test:
 	go test -v --cover ./...
 
 start-server:
 	go run main.go
+
 
 .PHONY: startPG createdb removedb

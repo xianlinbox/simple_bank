@@ -19,7 +19,8 @@ func NewServer(store db.Store) *ApiServer {
 	}
 	if engine,ok := binding.Validator.Engine().(*validator.Validate); ok {
 		engine.RegisterValidation("positiveAccountID", validateAccountID)
-	}
+	
+	router.POST("/users", server.CreateUser)}
 	router.POST("/accounts", server.CreateAccount)
 	router.GET("/accounts", server.ListAccounts)
 	router.GET("/accounts/:id", server.GetAccount)

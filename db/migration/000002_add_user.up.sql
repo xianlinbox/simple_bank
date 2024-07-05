@@ -1,4 +1,4 @@
-CREATE TABLE "user" (
+CREATE TABLE "users" (
   "username" varchar NOT NULL PRIMARY KEY,
   "email" varchar NOT NULL UNIQUE,
   "password" varchar NOT NULL, -- hashed password
@@ -7,4 +7,4 @@ CREATE TABLE "user" (
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
-ALTER TABLE "account" ADD FOREIGN KEY ("owner") REFERENCES "user"("username");
+ALTER TABLE "account" ADD FOREIGN KEY ("owner") REFERENCES "users"("username");

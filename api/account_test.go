@@ -9,6 +9,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
+	"github.com/xianlinbox/simple_bank/api/security"
 	db "github.com/xianlinbox/simple_bank/db/sqlc"
 	mockdb "github.com/xianlinbox/simple_bank/db/sqlc/mock"
 )
@@ -30,7 +31,7 @@ func TestCreateAccountAPI(t *testing.T) {
 	store := mockdb.NewMockStore(controller)
 	store.EXPECT().AddAccount(gomock.Any(), gomock.Eq(params)).Times(1)
 
-	server := NewServer(store)
+	server := NewServer(store, &security.PasetoTokenMaker{})
 	recorder := httptest.NewRecorder()
 	requestData, err := json.Marshal(newAccount)
 	require.NoError(t, err)

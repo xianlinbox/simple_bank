@@ -11,6 +11,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
+	"github.com/xianlinbox/simple_bank/api/security"
 	db "github.com/xianlinbox/simple_bank/db/sqlc"
 	mockdb "github.com/xianlinbox/simple_bank/db/sqlc/mock"
 	"github.com/xianlinbox/simple_bank/util"
@@ -60,7 +61,7 @@ func TestCreateUserAPI(t *testing.T) {
 	store := mockdb.NewMockStore(controller)
 	store.EXPECT().AddUser(gomock.Any(), eqCreateUserParams(params, user.Password)).Times(1).Return(user, nil)
 
-	server := NewServer(store)
+	server := NewServer(store, &security.PasetoTokenMaker{})
 	recorder := httptest.NewRecorder()
 	requestData, err := json.Marshal(user)
 	require.NoError(t, err)

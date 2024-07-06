@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -27,7 +28,7 @@ func TestAuthMiddleware(t *testing.T) {
 			setupAuth: func(t *testing.T, request *http.Request, tokenMaker security.Maker) {
 				token, err := tokenMaker.GenerateToken("test user", time.Minute)
 				require.NoError(t, err)
-				request.Header.Set("Authorization", "Bearer " + token)	
+				request.Header.Set(authorizationHeader, fmt.Sprintf("%v %v",authorizationType, token))	
 			},
 			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusOK, recorder.Code)
@@ -41,17 +42,28 @@ func TestAuthMiddleware(t *testing.T) {
 				require.Equal(t, http.StatusUnauthorized, recorder.Code)
 			},
 		},
-		// {
-		// 	name: "Unsupported Authorization Header",
-		// 	setupAuth: func(t *testing.T, request *http.Request, tokenMaker security.Maker) {
-		// 		token, err := tokenMaker.GenerateToken("test user", time.Minute)
-		// 		require.NoError(t, err)
-		// 		request.Header.Set("Authorization", "unsported " + token)	
-		// 	},
-		// 	checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
-		// 		require.Equal(t, http.StatusUnauthorized, recorder.Code)
-		// 	},
-		// },
+		{
+			name: "Unsupported Authorization Header",
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker security.Maker) {
+				token, err := tokenMaker.GenerateToken("test user", time.Minute)
+				require.NoError(t, err)
+				request.Header.Set(authorizationHeader, fmt.Sprintf("%v %v","unsupoorted", token))	
+			},
+			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusUnauthorized, recorder.Code)
+			},
+		},
+		{
+			name: "Invalid Token",
+			setupAuth: func(t *testing.T, request *http.Request, tokenMaker security.Maker) {
+				token, err := tokenMaker.GenerateToken("test user", -time.Minute)
+				require.NoError(t, err)
+				request.Header.Set(authorizationHeader, fmt.Sprintf("%v %v",authorizationType, token))	
+			},
+			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusUnauthorized, recorder.Code)
+			},
+		},
 	}
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {

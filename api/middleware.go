@@ -28,7 +28,21 @@ func authMiddleware(tokenMaker security.Maker) gin.HandlerFunc{
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 			return
 		}
-		// authType := authFields[1].
+		authType := authFields[0]
+		if authType != authorizationType {
+			err := errors.New("authorization type is not supported")
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+			return
+		}
+
+		access_token := authFields[1]
+		payload,err :=tokenMaker.VerifyToken(access_token)
+		if err != nil {
+			err := errors.New("access_token is not valid")
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+			return
+		}
+		c.Set(AUTH_KEY, payload)
 		c.Next()
 	}
 

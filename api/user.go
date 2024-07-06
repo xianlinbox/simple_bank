@@ -47,6 +47,10 @@ type LoginRequest struct {
 	Username string `json:"Username" binding:"required"`
 	Password string `json:"Password" binding:"required" validate:"min=8"`
 }
+type LoginResponse struct {
+	User string `json:"user"`
+	AccessToken string `json:"access_token"`
+}
 
 func (server *ApiServer) Login(c *gin.Context) {
 	var req LoginRequest
@@ -72,5 +76,10 @@ func (server *ApiServer) Login(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, errorResponse(err))
 		return	
 	}
-	c.JSON(http.StatusOK, newToken)
+
+	response:= LoginResponse{
+		User: user.Username,
+		AccessToken: newToken,
+	}
+	c.JSON(http.StatusOK, response)
 }

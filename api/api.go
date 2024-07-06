@@ -24,6 +24,9 @@ func NewServer(store db.Store, tokenMaker security.Maker) *ApiServer {
 	if engine,ok := binding.Validator.Engine().(*validator.Validate); ok {
 		engine.RegisterValidation("positiveAccountID", validateAccountID)
 	
+	auth_group :=router.Group("/")
+	auth_group.Use(authMiddleware(server.tokenMaker))
+	
 	router.POST("/users", server.CreateUser)}
 	router.POST("/user/login", server.Login)
 	router.POST("/accounts", server.CreateAccount)

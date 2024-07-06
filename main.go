@@ -21,7 +21,7 @@ func main() {
 	if err != nil {
 		log.Fatal("cannot connect to db: ", err)
 	}
-	tokenMaker,err := security.NewPasetoTokenMaker(config.SecretKey)
+	tokenMaker,err := security.NewPasetoTokenMaker(config.SymmetricKey)
 	if err != nil {
 		log.Fatal("can't create token maker: ", err)
 	}

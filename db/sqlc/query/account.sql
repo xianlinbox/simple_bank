@@ -2,9 +2,11 @@
 SELECT * FROM account
 WHERE id = $1 LIMIT 1;
 
--- name: ListAccounts :many
+-- name: GetAccountsByOwner :many
 SELECT * FROM account
-ORDER BY id;
+WHERE owner = $1
+ORDER BY id
+LIMIT $2;
 
 -- name: AddAccount :one
 INSERT INTO account (

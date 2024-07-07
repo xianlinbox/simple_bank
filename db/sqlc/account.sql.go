@@ -65,13 +65,20 @@ func (q *Queries) GetAccount(ctx context.Context, id int64) (Account, error) {
 	return i, err
 }
 
-const listAccounts = `-- name: ListAccounts :many
+const getAccountsByOwner = `-- name: GetAccountsByOwner :many
 SELECT id, owner, balance, currency, created_at FROM account
+WHERE owner = $1
 ORDER BY id
+LIMIT $2
 `
 
-func (q *Queries) ListAccounts(ctx context.Context) ([]Account, error) {
-	rows, err := q.db.Query(ctx, listAccounts)
+type GetAccountsByOwnerParams struct {
+	Owner string
+	Limit int32
+}
+
+func (q *Queries) GetAccountsByOwner(ctx context.Context, arg GetAccountsByOwnerParams) ([]Account, error) {
+	rows, err := q.db.Query(ctx, getAccountsByOwner, arg.Owner, arg.Limit)
 	if err != nil {
 		return nil, err
 	}

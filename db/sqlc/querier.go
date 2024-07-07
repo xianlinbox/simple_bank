@@ -15,10 +15,10 @@ type Querier interface {
 	AddUser(ctx context.Context, arg AddUserParams) (User, error)
 	DeleteAccount(ctx context.Context, id int64) error
 	GetAccount(ctx context.Context, id int64) (Account, error)
+	GetAccountsByOwner(ctx context.Context, arg GetAccountsByOwnerParams) ([]Account, error)
 	GetEntry(ctx context.Context, id int64) (Entry, error)
 	GetTransfer(ctx context.Context, id int64) (Transfer, error)
 	GetUser(ctx context.Context, username string) (User, error)
-	ListAccounts(ctx context.Context) ([]Account, error)
 	ListEntries(ctx context.Context) ([]Entry, error)
 	ListTransfers(ctx context.Context) ([]Transfer, error)
 	UpdateAccount(ctx context.Context, arg UpdateAccountParams) error

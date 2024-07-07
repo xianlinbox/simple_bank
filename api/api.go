@@ -23,15 +23,15 @@ func NewServer(store db.Store, tokenMaker security.Maker) *ApiServer {
 	}
 	if engine,ok := binding.Validator.Engine().(*validator.Validate); ok {
 		engine.RegisterValidation("positiveAccountID", validateAccountID)
-	
+	}
+	router.POST("/users", server.CreateUser)
+	router.POST("/user/login", server.Login)
 	auth_group :=router.Group("/")
 	auth_group.Use(authMiddleware(server.tokenMaker))
+	auth_group.POST("/accounts", server.CreateAccount)
+	auth_group.GET("/accounts", server.ListAccounts)
+	auth_group.GET("/accounts/:id", server.GetAccount)
 	
-	router.POST("/users", server.CreateUser)}
-	router.POST("/user/login", server.Login)
-	router.POST("/accounts", server.CreateAccount)
-	router.GET("/accounts", server.ListAccounts)
-	router.GET("/accounts/:id", server.GetAccount)
 	server.router = router
 	return server
 }

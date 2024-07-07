@@ -10,7 +10,6 @@ import (
 )
 
 type createAccountRequest struct {
-	Owner    string `json:"owner" binding:"required"`
 	Currency string `json:"currency" binding:"required,oneof=USD EUR"`
 }
 
@@ -21,9 +20,9 @@ func  (server *ApiServer) CreateAccount(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-
+	auth_payload :=c.MustGet(AUTH_KEY).(*security.Payload)
 	account, err := server.store.AddAccount(c, db.AddAccountParams{
-		Owner: req.Owner,
+		Owner: auth_payload.Username,
 		Balance: 0,
 		Currency: req.Currency,
 	})

@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/xianlinbox/simple_bank/api/security"
 	db "github.com/xianlinbox/simple_bank/db/sqlc"
 )
 
@@ -35,15 +36,20 @@ func  (server *ApiServer) CreateAccount(c *gin.Context) {
 }
 
 func (server *ApiServer) ListAccounts(c *gin.Context) {
+	auth_payload:= c.MustGet(AUTH_KEY).(*security.Payload)
+	params :=db.GetAccountsByOwnerParams{
+		Owner: auth_payload.Username,
+		Limit: 50,
+	}
 
-	accouns, err := server.store.ListAccounts(c)
+	accounts, err := server.store.GetAccountsByOwner(c, params)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, errorResponse(err))
 		return		
 	}
 
-	c.JSON(http.StatusOK, accouns)
+	c.JSON(http.StatusOK, accounts)
 }
 
 func (server *ApiServer) GetAccount(c *gin.Context) {

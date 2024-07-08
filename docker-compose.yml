@@ -1,0 +1,23 @@
+version: "3"
+services:
+  db:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: simple_bank
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      - DB_SOURCE=postgresql://root:admin@db:5432/simple_bank?sslmode=disable
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+    entrypoint: []
+    command: ["/app/main"]

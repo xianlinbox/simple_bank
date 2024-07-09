@@ -19,7 +19,3 @@ func NewServer(store db.Store, tokenMaker security.Maker) *GapiServer {
 	}
 	return server
 }
-
-func (server *GapiServer) Start(address string) error {
-	return nil
-}

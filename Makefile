@@ -1,6 +1,6 @@
 startPG:
 	docker stop simple_bank_pg || true
-	docker run --network--name simple_bank_pg -e POSTGRES_USER=root -e POSTGRES_PASSWORD=admin -p 5432:5432 -d postgres:16-alpine
+	docker run --name simple_bank_pg -e POSTGRES_USER=root -e POSTGRES_PASSWORD=admin -p 5432:5432 -d postgres:16-alpine
 
 createdb:
 	docker exec -it simple_bank_pg createdb --username=root --owner=root simple_bank

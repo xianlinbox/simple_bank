@@ -26,5 +26,9 @@ test:
 start-server:
 	go run main.go
 
-
-.PHONY: startPG createdb removedb
+proto:
+	rm -rf proto_code/*
+	protoc --proto_path=./proto --go_out=./proto_code --go_opt=paths=source_relative \
+    --go-grpc_out=./proto_code --go-grpc_opt=paths=source_relative \
+    proto/*.proto
+.PHONY: startPG createdb removedb, proto

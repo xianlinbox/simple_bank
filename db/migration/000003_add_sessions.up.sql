@@ -4,7 +4,7 @@ CREATE TABLE "sessions" (
   "refresh_token" varchar NOT NULL, -- hashed password
   "user_agent" varchar NOT NULL,
   "client_ip" varchar NOT NULL,
-  "expired_at" timestamptz NOT NULL DEFAULT (now() + interval '90 day'),
+  "expired_at" timestamptz NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 

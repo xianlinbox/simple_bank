@@ -6,17 +6,21 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Querier interface {
 	AddAccount(ctx context.Context, arg AddAccountParams) (Account, error)
 	AddEntry(ctx context.Context, arg AddEntryParams) (Entry, error)
+	AddSession(ctx context.Context, arg AddSessionParams) (Session, error)
 	AddTransfer(ctx context.Context, arg AddTransferParams) (Transfer, error)
 	AddUser(ctx context.Context, arg AddUserParams) (User, error)
 	DeleteAccount(ctx context.Context, id int64) error
 	GetAccount(ctx context.Context, id int64) (Account, error)
 	GetAccountsByOwner(ctx context.Context, arg GetAccountsByOwnerParams) ([]Account, error)
 	GetEntry(ctx context.Context, id int64) (Entry, error)
+	GetSession(ctx context.Context, id pgtype.UUID) (Session, error)
 	GetTransfer(ctx context.Context, id int64) (Transfer, error)
 	GetUser(ctx context.Context, username string) (User, error)
 	ListEntries(ctx context.Context) ([]Entry, error)

@@ -5,6 +5,7 @@
 package db
 
 import (
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -24,7 +25,7 @@ type Entry struct {
 }
 
 type Session struct {
-	ID           pgtype.UUID
+	ID           uuid.UUID
 	Username     string
 	RefreshToken string
 	UserAgent    string

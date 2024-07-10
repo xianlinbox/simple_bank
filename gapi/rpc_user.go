@@ -5,6 +5,7 @@ import (
 
 	"time"
 
+	"github.com/google/uuid"
 	db "github.com/xianlinbox/simple_bank/db/sqlc"
 	"github.com/xianlinbox/simple_bank/proto_code"
 	"github.com/xianlinbox/simple_bank/util"
@@ -50,7 +51,18 @@ func (server *GapiServer) Login( c context.Context, req *proto_code.LoginRequest
 	if err != nil{
 		return nil, status.Errorf(codes.Internal, "Failed to generate new token: %v", err)
 	}
-
+	metadata := extractMetadata(c)
+	_, err = server.store.AddSession(c, db.AddSessionParams{
+		ID:	uuid.New(),
+		Username: user.Username,
+		RefreshToken: newToken,
+		UserAgent:    metadata.UserAgent,
+		ClientIp:     metadata.ClientIP,
+		ExpiredAt:    time.Now().Add(time.Hour * 24),
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Failed to save session: %v", err)
+	}
 	response:= proto_code.LoginResponse{
 		User: convertUserToProto(user),
 		AccessToken: newToken,
@@ -64,7 +76,7 @@ func convertUserToProto(user db.User) *proto_code.User {
 		Username: user.Username,
 		FullName: user.FullName,
 		Email: user.Email,
-		PasswordExpiredAt: timestamppb.New(user.PasswordExpiredAt.Time),
-		CreatedAt: timestamppb.New(user.CreatedAt.Time),
+		PasswordExpiredAt: timestamppb.New(user.PasswordExpiredAt),
+		CreatedAt: timestamppb.New(user.CreatedAt),
 	}
 }

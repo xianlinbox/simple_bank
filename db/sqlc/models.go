@@ -5,6 +5,8 @@
 package db
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 )
@@ -14,14 +16,14 @@ type Account struct {
 	Owner     string
 	Balance   int64
 	Currency  string
-	CreatedAt pgtype.Timestamptz
+	CreatedAt time.Time
 }
 
 type Entry struct {
 	ID        int64
 	AccountID pgtype.Int8
 	Amount    int64
-	CreatedAt pgtype.Timestamptz
+	CreatedAt time.Time
 }
 
 type Session struct {
@@ -30,8 +32,8 @@ type Session struct {
 	RefreshToken string
 	UserAgent    string
 	ClientIp     string
-	ExpiredAt    pgtype.Timestamptz
-	CreatedAt    pgtype.Timestamptz
+	ExpiredAt    time.Time
+	CreatedAt    time.Time
 }
 
 type Transfer struct {
@@ -40,7 +42,7 @@ type Transfer struct {
 	ToAccount   pgtype.Int8
 	// must >0
 	Amount    int64
-	CreatedAt pgtype.Timestamptz
+	CreatedAt time.Time
 }
 
 type User struct {
@@ -48,6 +50,6 @@ type User struct {
 	Email             string
 	Password          string
 	FullName          string
-	PasswordExpiredAt pgtype.Timestamptz
-	CreatedAt         pgtype.Timestamptz
+	PasswordExpiredAt time.Time
+	CreatedAt         time.Time
 }

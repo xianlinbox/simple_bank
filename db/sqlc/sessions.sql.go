@@ -7,9 +7,9 @@ package db
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const addSession = `-- name: AddSession :one
@@ -27,7 +27,7 @@ type AddSessionParams struct {
 	RefreshToken string
 	UserAgent    string
 	ClientIp     string
-	ExpiredAt    pgtype.Timestamptz
+	ExpiredAt    time.Time
 }
 
 func (q *Queries) AddSession(ctx context.Context, arg AddSessionParams) (Session, error) {

@@ -38,8 +38,12 @@ func (server *GapiServer) CreateUser(ctx context.Context, req *proto_code.Create
 }
 
 func (server *GapiServer) UpdateUser(ctx context.Context, req *proto_code.UpdateUserRequest) (*proto_code.UpdateUserResponse, error) {
+	authPayload, err :=server.authorizaion(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.PermissionDenied, "authentication failed: %v", err)
+	}
 	arg:=db.UpdateUserParams{
-		Username: req.Username,
+		Username: authPayload.Username,
 		FullName: pgtype.Text{
 			String: req.GetFullName(),
 			Valid: req.GetFullName() != "",

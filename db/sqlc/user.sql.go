@@ -7,6 +7,8 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const addUser = `-- name: AddUser :one
@@ -51,6 +53,42 @@ WHERE username = $1 LIMIT 1
 
 func (q *Queries) GetUser(ctx context.Context, username string) (User, error) {
 	row := q.db.QueryRow(ctx, getUser, username)
+	var i User
+	err := row.Scan(
+		&i.Username,
+		&i.Email,
+		&i.Password,
+		&i.FullName,
+		&i.PasswordExpiredAt,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const updateUser = `-- name: UpdateUser :one
+UPDATE users
+SET 
+  password = coalesce($1, password), 
+  full_name = coalesce($2, full_name), 
+  email = coalesce($3, email)
+WHERE username = $4
+RETURNING username, email, password, full_name, password_expired_at, created_at
+`
+
+type UpdateUserParams struct {
+	Password pgtype.Text
+	FullName pgtype.Text
+	Email    pgtype.Text
+	Username string
+}
+
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
+	row := q.db.QueryRow(ctx, updateUser,
+		arg.Password,
+		arg.FullName,
+		arg.Email,
+		arg.Username,
+	)
 	var i User
 	err := row.Scan(
 		&i.Username,

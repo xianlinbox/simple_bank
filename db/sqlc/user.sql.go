@@ -70,16 +70,18 @@ UPDATE users
 SET 
   password = coalesce($1, password), 
   full_name = coalesce($2, full_name), 
-  email = coalesce($3, email)
-WHERE username = $4
+  email = coalesce($3, email),
+  password_expired_at = coalesce($4, password_expired_at)
+WHERE username = $5
 RETURNING username, email, password, full_name, password_expired_at, created_at
 `
 
 type UpdateUserParams struct {
-	Password pgtype.Text
-	FullName pgtype.Text
-	Email    pgtype.Text
-	Username string
+	Password          pgtype.Text
+	FullName          pgtype.Text
+	Email             pgtype.Text
+	PasswordExpiredAt pgtype.Timestamptz
+	Username          string
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
@@ -87,6 +89,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		arg.Password,
 		arg.FullName,
 		arg.Email,
+		arg.PasswordExpiredAt,
 		arg.Username,
 	)
 	var i User

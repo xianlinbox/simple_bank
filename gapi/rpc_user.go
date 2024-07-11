@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/xianlinbox/simple_bank/db/sqlc"
 	"github.com/xianlinbox/simple_bank/proto_code"
 	"github.com/xianlinbox/simple_bank/util"
@@ -34,6 +35,44 @@ func (server *GapiServer) CreateUser(ctx context.Context, req *proto_code.Create
 		User: convertUserToProto(user),
 	}
 	return &response, nil
+}
+
+func (server *GapiServer) UpdateUser(ctx context.Context, req *proto_code.UpdateUserRequest) (*proto_code.UpdateUserResponse, error) {
+	arg:=db.UpdateUserParams{
+		Username: req.Username,
+		FullName: pgtype.Text{
+			String: req.GetFullName(),
+			Valid: req.GetFullName() != "",
+		},
+		Email: pgtype.Text{
+			String: req.GetEmail(),
+			Valid: req.GetEmail() != "",
+		},
+	}
+
+	password := req.GetPassword(); 
+	if password != "" {
+		password, err:=util.EncryptPassword(req.GetPassword())
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "Failed to encypt the password: %v", err)
+		}
+		arg.Password = pgtype.Text{
+			String: password,
+			Valid: true,
+		}
+		arg.PasswordExpiredAt = pgtype.Timestamptz{
+			Time: time.Now().Add(time.Hour * 24 * 90),
+			Valid: true,
+		}
+	}
+
+	updatedUser,err:=server.store.UpdateUser(ctx, arg)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "didn't find the user: %v", err)
+	}
+	return &proto_code.UpdateUserResponse{
+		User: convertUserToProto(updatedUser),
+	}, nil
 }
 
 func (server *GapiServer) Login( c context.Context, req *proto_code.LoginRequest) (*proto_code.LoginResponse, error) {

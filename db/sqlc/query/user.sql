@@ -15,6 +15,7 @@ UPDATE users
 SET 
   password = coalesce(sqlc.narg(password), password), 
   full_name = coalesce(sqlc.narg(full_name), full_name), 
-  email = coalesce(sqlc.narg(email), email)
+  email = coalesce(sqlc.narg(email), email),
+  password_expired_at = coalesce(sqlc.narg(password_expired_at), password_expired_at)
 WHERE username = sqlc.arg(username)
 RETURNING *;

@@ -35,7 +35,8 @@ func main() {
 
 func runGrpcServer(store *db.Queries, tokenMaker security.Maker, config util.Config) {
 	server := gapi.NewServer(store, tokenMaker)
-	grpcServer := grpc.NewServer()
+	grpcLogger := grpc.UnaryInterceptor(gapi.GrpcLogger)
+	grpcServer := grpc.NewServer(grpcLogger)
 	proto_code.RegisterUsersServiceServer(grpcServer, server)
 	reflection.Register(grpcServer)
 

@@ -33,3 +33,16 @@ func (distributor *RedisDistributor) DistributeSendVerificationEmailTask(
 	log.Info().Str("type", task.Type()).Msgf("task enqueued: %v", info)
 	return nil
 }
+
+func (processor *RedisTaskProcessor) DistributeSendVerificationEmailTask(ctx context.Context, task *asynq.Task) error {
+	var payload SendVerificationEmailTaskPayload
+	if err := json.Unmarshal(task.Payload(), &payload); err != nil {
+		return fmt.Errorf("could not unmarshal task payload: %w", err)
+	}
+	_, err := processor.store.GetUser(ctx, payload.Username)
+	if err != nil {
+		return fmt.Errorf("could not get user: %w", err)
+	}
+	log.Info().Str("type", task.Type()).Msgf("task processed: %v", task)
+	return nil
+}

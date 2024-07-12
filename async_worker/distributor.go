@@ -1,10 +1,19 @@
 package async_worker
 
-import "github.com/hibiken/asynq"
+import (
+	"context"
 
-type Distributor interface{}
+	"github.com/hibiken/asynq"
+)
 
-type RedisDistributor struct{
+type Distributor interface {
+	DistributeSendVerificationEmailTask(
+		ctx context.Context,
+		payload *SendVerificationEmailTaskPayload,
+		opts ...asynq.Option) error
+}
+
+type RedisDistributor struct {
 	client *asynq.Client
 }
 

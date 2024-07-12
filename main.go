@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		log.Fatal("can't create token maker: ", err)
 	}
+	
 	go runApiServer(store, tokenMaker, config)
 	runGrpcServer(store, tokenMaker, config)
 }

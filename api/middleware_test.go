@@ -73,7 +73,7 @@ func TestAuthMiddleware(t *testing.T) {
 			store := mockdb.NewMockStore(controller)
 			tokenMaker, err := security.NewPasetoTokenMaker(TEST_SYMMETRIC_KEY)
 			require.NoError(t, err)
-			server := NewServer(store, tokenMaker, nil)
+			server := NewServer(store, nil, tokenMaker, nil)
 			server.router.GET("/auth", authMiddleware(tokenMaker), func(ctx *gin.Context) {
 				ctx.JSON(http.StatusOK, gin.H{})
 			})

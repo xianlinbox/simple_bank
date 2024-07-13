@@ -30,7 +30,7 @@ func (distributor *RedisDistributor) DistributeSendVerificationEmailTask(
 	if err != nil {
 		return fmt.Errorf("could not enqueue task: %w", err)
 	}
-	log.Info().Str("type", task.Type()).Msgf("task enqueued: %v", info)
+	log.Info().Str("type", task.Type()).Str("queue", info.Queue).Msg("task enqueued")
 	return nil
 }
 

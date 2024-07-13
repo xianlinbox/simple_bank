@@ -38,7 +38,7 @@ func main() {
 	}
 	distributor := async_worker.NewRedisDistributor(&redisClientopt)
 
-	go runApiServer(store, tokenMaker, config, distributor)
+	go runApiServer(store, pgConn, tokenMaker, config, distributor)
 	runGrpcServer(store, tokenMaker, config)
 }
 
@@ -59,8 +59,8 @@ func runGrpcServer(store *db.Queries, tokenMaker security.Maker, config util.Con
 	}
 }
 
-func runApiServer(store *db.Queries, tokenMaker security.Maker, config util.Config, distributor async_worker.Distributor) {
-	err := api.NewServer(store, tokenMaker, distributor).Start(config.ServerAddress)
+func runApiServer(store *db.Queries, db_conn *pgx.Conn, tokenMaker security.Maker, config util.Config, distributor async_worker.Distributor) {
+	err := api.NewServer(store, db_conn, tokenMaker, distributor).Start(config.ServerAddress)
 	if err != nil {
 		log.Fatal("cannot start server: ", err)
 	}

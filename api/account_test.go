@@ -33,7 +33,7 @@ func TestCreateAccountAPI(t *testing.T) {
 	store.EXPECT().AddAccount(gomock.Any(), gomock.Eq(params)).Times(1)
 	tokenMaker, err := security.NewPasetoTokenMaker(TEST_SYMMETRIC_KEY)
 	require.NoError(t, err)
-	server := NewServer(store, tokenMaker, nil)
+	server := NewServer(store, nil, tokenMaker, nil)
 	recorder := httptest.NewRecorder()
 	requestData, err := json.Marshal(newAccount)
 	require.NoError(t, err)

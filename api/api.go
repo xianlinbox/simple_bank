@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
+	"github.com/jackc/pgx/v5"
 	security "github.com/xianlinbox/simple_bank/api/security"
 	"github.com/xianlinbox/simple_bank/async_worker"
 	db "github.com/xianlinbox/simple_bank/db/sqlc"
@@ -11,16 +12,18 @@ import (
 
 type ApiServer struct {
 	store       db.Store
+	db_conn     *pgx.Conn
 	router      *gin.Engine
 	tokenMaker  security.Maker
 	distributor async_worker.Distributor
 }
 
-func NewServer(store db.Store, tokenMaker security.Maker, distributor async_worker.Distributor) *ApiServer {
+func NewServer(store db.Store, db_conn *pgx.Conn, tokenMaker security.Maker, distributor async_worker.Distributor) *ApiServer {
 
 	router := gin.Default()
 	server := &ApiServer{
 		store:       store,
+		db_conn:     db_conn,
 		tokenMaker:  tokenMaker,
 		distributor: distributor,
 	}

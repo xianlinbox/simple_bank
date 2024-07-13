@@ -8,8 +8,10 @@ import (
 	context "context"
 	reflect "reflect"
 
+	gin "github.com/gin-gonic/gin"
 	gomock "github.com/golang/mock/gomock"
 	uuid "github.com/google/uuid"
+	pgx "github.com/jackc/pgx/v5"
 	db "github.com/xianlinbox/simple_bank/db/sqlc"
 )
 
@@ -109,6 +111,21 @@ func (m *MockStore) AddUser(arg0 context.Context, arg1 db.AddUserParams) (db.Use
 func (mr *MockStoreMockRecorder) AddUser(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddUser", reflect.TypeOf((*MockStore)(nil).AddUser), arg0, arg1)
+}
+
+// CreateUserTx mocks base method.
+func (m *MockStore) CreateUserTx(arg0 *gin.Context, arg1 *pgx.Conn, arg2 db.CreateUserTxParams) (*db.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateUserTx", arg0, arg1, arg2)
+	ret0, _ := ret[0].(*db.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateUserTx indicates an expected call of CreateUserTx.
+func (mr *MockStoreMockRecorder) CreateUserTx(arg0, arg1, arg2 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUserTx", reflect.TypeOf((*MockStore)(nil).CreateUserTx), arg0, arg1, arg2)
 }
 
 // DeleteAccount mocks base method.

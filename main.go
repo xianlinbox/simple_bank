@@ -5,9 +5,11 @@ import (
 	"log"
 	"net"
 
+	"github.com/hibiken/asynq"
 	"github.com/jackc/pgx/v5"
 	api "github.com/xianlinbox/simple_bank/api"
 	"github.com/xianlinbox/simple_bank/api/security"
+	"github.com/xianlinbox/simple_bank/async_worker"
 	db "github.com/xianlinbox/simple_bank/db/sqlc"
 	"github.com/xianlinbox/simple_bank/gapi"
 	"github.com/xianlinbox/simple_bank/proto_code"
@@ -15,6 +17,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
+
 func main() {
 	config, err := util.LoadConfig(".")
 	if err != nil {
@@ -25,12 +28,17 @@ func main() {
 	if err != nil {
 		log.Fatal("cannot connect to db: ", err)
 	}
-	tokenMaker,err := security.NewPasetoTokenMaker(config.SymmetricKey)
+	tokenMaker, err := security.NewPasetoTokenMaker(config.SymmetricKey)
 	if err != nil {
 		log.Fatal("can't create token maker: ", err)
 	}
-	
-	go runApiServer(store, tokenMaker, config)
+
+	redisClientopt := asynq.RedisClientOpt{
+		Addr: config.RedisAddress,
+	}
+	distributor := async_worker.NewRedisDistributor(&redisClientopt)
+
+	go runApiServer(store, tokenMaker, config, distributor)
 	runGrpcServer(store, tokenMaker, config)
 }
 
@@ -41,7 +49,7 @@ func runGrpcServer(store *db.Queries, tokenMaker security.Maker, config util.Con
 	proto_code.RegisterUsersServiceServer(grpcServer, server)
 	reflection.Register(grpcServer)
 
-	listener,err:= net.Listen("tcp", config.GrpcServerAddress)
+	listener, err := net.Listen("tcp", config.GrpcServerAddress)
 	if err != nil {
 		log.Fatal("cannot create listener: ", err)
 	}
@@ -51,8 +59,8 @@ func runGrpcServer(store *db.Queries, tokenMaker security.Maker, config util.Con
 	}
 }
 
-func runApiServer(store *db.Queries, tokenMaker security.Maker, config util.Config) {
-	err := api.NewServer(store, tokenMaker).Start(config.ServerAddress)
+func runApiServer(store *db.Queries, tokenMaker security.Maker, config util.Config, distributor async_worker.Distributor) {
+	err := api.NewServer(store, tokenMaker, distributor).Start(config.ServerAddress)
 	if err != nil {
 		log.Fatal("cannot start server: ", err)
 	}

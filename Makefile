@@ -31,4 +31,9 @@ proto:
 	protoc --proto_path=./proto --go_out=./proto_code --go_opt=paths=source_relative \
     --go-grpc_out=./proto_code --go-grpc_opt=paths=source_relative \
     proto/*.proto
+
+start-redis:
+	docker stop simple_bank_redis || true
+	docker run --name simple_bank_redis -p 6379:6379 -d redis:7.2.5-alpine
+
 .PHONY: startPG createdb removedb, proto

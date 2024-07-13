@@ -18,7 +18,7 @@ import (
 )
 
 type eqCreateUserParamsMatcher struct {
-	arg db.AddUserParams
+	arg      db.AddUserParams
 	password string
 }
 
@@ -27,7 +27,7 @@ func (e eqCreateUserParamsMatcher) Matches(x interface{}) bool {
 	if !ok {
 		return false
 	}
-	errr := util.CheckPassword(arg.Password,e.password)
+	errr := util.CheckPassword(arg.Password, e.password)
 	if errr != nil {
 		return false
 	}
@@ -38,22 +38,22 @@ func (e eqCreateUserParamsMatcher) String() string {
 }
 
 func eqCreateUserParams(arg db.AddUserParams, password string) gomock.Matcher {
-	return eqCreateUserParamsMatcher{arg,password}
+	return eqCreateUserParamsMatcher{arg, password}
 }
 
 func TestCreateUserAPI(t *testing.T) {
 
 	user := db.User{
-		Username:  "TestUser",
-		FullName : "Test User",
-		Email: "a@b.com",
+		Username: "TestUser",
+		FullName: "Test User",
+		Email:    "a@b.com",
 		Password: "12345678",
 	}
 	params := db.AddUserParams{
 		Username: user.Username,
 		FullName: user.FullName,
 		Password: user.Password,
-		Email: user.Email,
+		Email:    user.Email,
 	}
 
 	controller := gomock.NewController(t)
@@ -61,19 +61,19 @@ func TestCreateUserAPI(t *testing.T) {
 	store := mockdb.NewMockStore(controller)
 	store.EXPECT().AddUser(gomock.Any(), eqCreateUserParams(params, user.Password)).Times(1).Return(user, nil)
 
-	server := NewServer(store, &security.PasetoTokenMaker{})
+	server := NewServer(store, &security.PasetoTokenMaker{}, nil)
 	recorder := httptest.NewRecorder()
 	requestData, err := json.Marshal(user)
 	require.NoError(t, err)
-	request, err := http.NewRequest(http.MethodPost, "/users", bytes.NewBuffer(requestData))	
+	request, err := http.NewRequest(http.MethodPost, "/users", bytes.NewBuffer(requestData))
 	require.NoError(t, err)
 	server.router.ServeHTTP(recorder, request)
 	require.Equal(t, http.StatusOK, recorder.Code)
-	response,err:=io.ReadAll(recorder.Body)
-	require.NoError(t,err)
+	response, err := io.ReadAll(recorder.Body)
+	require.NoError(t, err)
 	var userInResponse db.User
-	err =json.Unmarshal(response,&userInResponse)
+	err = json.Unmarshal(response, &userInResponse)
 	fmt.Println(userInResponse)
-	require.NoError(t,err)
-	require.Equal(t,user,userInResponse)
+	require.NoError(t, err)
+	require.Equal(t, user, userInResponse)
 }

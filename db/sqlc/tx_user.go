@@ -27,5 +27,6 @@ func (store *Queries) CreateUserTx(c *gin.Context, con *pgx.Conn, params CreateU
 	if err != nil {
 		return nil, err
 	}
+	tx.Commit(c)
 	return &user, nil
 }

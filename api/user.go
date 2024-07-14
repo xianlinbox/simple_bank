@@ -46,6 +46,7 @@ func (server *ApiServer) CreateUser(c *gin.Context) {
 			}
 			opts := []asynq.Option{
 				asynq.MaxRetry(3),
+				asynq.ProcessIn(10 * time.Second),
 			}
 			err := server.distributor.DistributeSendVerificationEmailTask(c, &payload, opts...)
 			if err != nil {

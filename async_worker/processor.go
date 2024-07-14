@@ -19,7 +19,11 @@ type RedisTaskProcessor struct {
 }
 
 func NewRedisTaskProcessor(redisOpt asynq.RedisClientOpt, store db.Store) *RedisTaskProcessor {
-	server := asynq.NewServer(redisOpt, asynq.Config{})
+	server := asynq.NewServer(redisOpt, asynq.Config{
+		ErrorHandler: asynq.ErrorHandlerFunc(func(ctx context.Context, task *asynq.Task, err error) {
+			log.Error().Err(err).Str("type", task.Type()).Msg("task processing error")
+		}),
+	})
 	return &RedisTaskProcessor{
 		server: server,
 		store:  store,

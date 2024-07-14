@@ -25,6 +25,7 @@ func (distributor *RedisDistributor) DistributeSendVerificationEmailTask(
 	if err != nil {
 		return fmt.Errorf("could not marshal payload: %w", err)
 	}
+
 	task := asynq.NewTask(TASK_SEND_VERIFICATION_EMAIL, mashalledPayload, opts...)
 	info, err := distributor.client.EnqueueContext(ctx, task)
 	if err != nil {
@@ -37,11 +38,13 @@ func (distributor *RedisDistributor) DistributeSendVerificationEmailTask(
 func (processor *RedisTaskProcessor) HandleSendVerificationEmailTask(ctx context.Context, task *asynq.Task) error {
 	var payload SendVerificationEmailTaskPayload
 	if err := json.Unmarshal(task.Payload(), &payload); err != nil {
-		return fmt.Errorf("could not unmarshal task payload: %w", err)
+		log.Error().Err(err).Msg("could not unmarshal payload")
+		return err
 	}
 	_, err := processor.store.GetUser(ctx, payload.Username)
 	if err != nil {
-		return fmt.Errorf("could not get user: %w", err)
+		log.Error().Err(err).Str("username", payload.Username).Msg("could not get user")
+		return err
 	}
 	log.Info().Str("type", task.Type()).Msgf("task processed: %v", task)
 	return nil

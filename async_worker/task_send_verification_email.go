@@ -34,7 +34,7 @@ func (distributor *RedisDistributor) DistributeSendVerificationEmailTask(
 	return nil
 }
 
-func (processor *RedisTaskProcessor) DistributeSendVerificationEmailTask(ctx context.Context, task *asynq.Task) error {
+func (processor *RedisTaskProcessor) HandleSendVerificationEmailTask(ctx context.Context, task *asynq.Task) error {
 	var payload SendVerificationEmailTaskPayload
 	if err := json.Unmarshal(task.Payload(), &payload); err != nil {
 		return fmt.Errorf("could not unmarshal task payload: %w", err)

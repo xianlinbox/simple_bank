@@ -2,11 +2,11 @@ package main
 
 import (
 	"context"
-	"log"
 	"net"
 
 	"github.com/hibiken/asynq"
 	"github.com/jackc/pgx/v5"
+	"github.com/rs/zerolog/log"
 	api "github.com/xianlinbox/simple_bank/api"
 	"github.com/xianlinbox/simple_bank/api/security"
 	"github.com/xianlinbox/simple_bank/async_worker"
@@ -21,16 +21,16 @@ import (
 func main() {
 	config, err := util.LoadConfig(".")
 	if err != nil {
-		log.Fatal("failed to load config: ", err)
+		log.Error().Msgf("failed to load config: %+v", err)
 	}
 	pgConn, err := pgx.Connect(context.Background(), config.DBSource)
 	store := db.New(pgConn)
 	if err != nil {
-		log.Fatal("cannot connect to db: ", err)
+		log.Error().Msgf("cannot connect to db: %+v", err)
 	}
 	tokenMaker, err := security.NewPasetoTokenMaker(config.SymmetricKey)
 	if err != nil {
-		log.Fatal("can't create token maker: ", err)
+		log.Error().Msgf("can't create token maker: %+v", err)
 	}
 
 	redisClientopt := asynq.RedisClientOpt{
@@ -39,6 +39,7 @@ func main() {
 	distributor := async_worker.NewRedisDistributor(&redisClientopt)
 
 	go runApiServer(store, pgConn, tokenMaker, config, distributor)
+	go runTaskProcessor(store)
 	runGrpcServer(store, tokenMaker, config)
 }
 
@@ -51,17 +52,25 @@ func runGrpcServer(store *db.Queries, tokenMaker security.Maker, config util.Con
 
 	listener, err := net.Listen("tcp", config.GrpcServerAddress)
 	if err != nil {
-		log.Fatal("cannot create listener: ", err)
+		log.Error().Msgf("cannot create listener: %+v", err)
 	}
 	err = grpcServer.Serve(listener)
 	if err != nil {
-		log.Fatal("cannot start server: ", err)
+		log.Error().Msgf("cannot start server: %+v", err)
 	}
 }
 
 func runApiServer(store *db.Queries, db_conn *pgx.Conn, tokenMaker security.Maker, config util.Config, distributor async_worker.Distributor) {
 	err := api.NewServer(store, db_conn, tokenMaker, distributor).Start(config.ServerAddress)
 	if err != nil {
-		log.Fatal("cannot start server: ", err)
+		log.Error().Msgf("cannot start server: %+v", err)
 	}
+}
+
+func runTaskProcessor(store db.Store) {
+	redisClientopt := asynq.RedisClientOpt{
+		Addr: "localhost:6379",
+	}
+	processor := async_worker.NewRedisTaskProcessor(redisClientopt, store)
+	processor.Start()
 }

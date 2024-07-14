@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/hibiken/asynq"
 	"github.com/xianlinbox/simple_bank/async_worker"
 	db "github.com/xianlinbox/simple_bank/db/sqlc"
 	util "github.com/xianlinbox/simple_bank/util"
@@ -43,7 +44,10 @@ func (server *ApiServer) CreateUser(c *gin.Context) {
 			payload := async_worker.SendVerificationEmailTaskPayload{
 				Username: user.Username,
 			}
-			err := server.distributor.DistributeSendVerificationEmailTask(c, &payload, nil)
+			opts := []asynq.Option{
+				asynq.MaxRetry(3),
+			}
+			err := server.distributor.DistributeSendVerificationEmailTask(c, &payload, opts...)
 			if err != nil {
 				log.Error().Err(err).Msg("Failed to send verification email, user")
 			}

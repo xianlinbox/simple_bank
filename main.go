@@ -36,10 +36,9 @@ func main() {
 	redisClientopt := asynq.RedisClientOpt{
 		Addr: config.RedisAddress,
 	}
-	distributor := async_worker.NewRedisDistributor(&redisClientopt)
 
-	go runApiServer(store, pgConn, tokenMaker, config, distributor)
-	go runTaskProcessor(store)
+	go runApiServer(store, pgConn, tokenMaker, config, redisClientopt)
+	go runTaskProcessor(store, redisClientopt)
 	runGrpcServer(store, tokenMaker, config)
 }
 
@@ -60,17 +59,15 @@ func runGrpcServer(store *db.Queries, tokenMaker security.Maker, config util.Con
 	}
 }
 
-func runApiServer(store *db.Queries, db_conn *pgx.Conn, tokenMaker security.Maker, config util.Config, distributor async_worker.Distributor) {
+func runApiServer(store *db.Queries, db_conn *pgx.Conn, tokenMaker security.Maker, config util.Config, redisClientopt asynq.RedisClientOpt) {
+	distributor := async_worker.NewRedisDistributor(&redisClientopt)
 	err := api.NewServer(store, db_conn, tokenMaker, distributor).Start(config.ServerAddress)
 	if err != nil {
 		log.Error().Msgf("cannot start server: %+v", err)
 	}
 }
 
-func runTaskProcessor(store db.Store) {
-	redisClientopt := asynq.RedisClientOpt{
-		Addr: "localhost:6379",
-	}
+func runTaskProcessor(store db.Store, redisClientopt asynq.RedisClientOpt) {
 	processor := async_worker.NewRedisTaskProcessor(redisClientopt, store)
 	processor.Start()
 }

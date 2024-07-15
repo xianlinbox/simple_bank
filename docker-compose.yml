@@ -14,12 +14,15 @@ services:
       - db_data:/var/lib/postgresql/data
   redis:
     image: redis:7.2.5-alpine
+    ports:
+      - "6379:6379"
   app:
     build:
       context: .
       dockerfile: Dockerfile
     environment:
       - DB_SOURCE=postgresql://root:admin@db:5432/simple_bank?sslmode=disable
+      - REDIS_ADDRESS=redis:6379
     ports:
       - 8080:8080
     depends_on:

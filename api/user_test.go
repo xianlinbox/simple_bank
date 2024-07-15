@@ -48,18 +48,6 @@ func TestCreateUserAPI(t *testing.T) {
 		Email:    "a@b.com",
 		Password: "12345678",
 	}
-	// addUserParams := db.AddUserParams{
-	// 	Username: user.Username,
-	// 	FullName: user.FullName,
-	// 	Password: user.Password,
-	// 	Email:    user.Email,
-	// }
-
-	// params := db.CreateUserTxParams{
-	// 	AddUserParams: addUserParams,
-	// 	AfterCreate: func(user db.User) error { return nil}
-	// }
-
 	controller := gomock.NewController(t)
 	defer controller.Finish()
 	store := mockdb.NewMockStore(controller)

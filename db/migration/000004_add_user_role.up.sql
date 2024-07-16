@@ -1,0 +1,1 @@
+ALTER TABLE "users" Add COLUMN "role" varchar NOT NULL DEFAULT 'depositor';

@@ -13,11 +13,11 @@ import (
 
 const addUser = `-- name: AddUser :one
 INSERT INTO users (
-  username, password, full_name, email
+  username, password, full_name, email, role
 ) VALUES (
-  $1, $2, $3, $4
+  $1, $2, $3, $4, $5
 )
-RETURNING username, email, password, full_name, password_expired_at, created_at
+RETURNING username, email, password, full_name, password_expired_at, created_at, role
 `
 
 type AddUserParams struct {
@@ -25,6 +25,7 @@ type AddUserParams struct {
 	Password string
 	FullName string
 	Email    string
+	Role     string
 }
 
 func (q *Queries) AddUser(ctx context.Context, arg AddUserParams) (User, error) {
@@ -33,6 +34,7 @@ func (q *Queries) AddUser(ctx context.Context, arg AddUserParams) (User, error) 
 		arg.Password,
 		arg.FullName,
 		arg.Email,
+		arg.Role,
 	)
 	var i User
 	err := row.Scan(
@@ -42,12 +44,13 @@ func (q *Queries) AddUser(ctx context.Context, arg AddUserParams) (User, error) 
 		&i.FullName,
 		&i.PasswordExpiredAt,
 		&i.CreatedAt,
+		&i.Role,
 	)
 	return i, err
 }
 
 const getUser = `-- name: GetUser :one
-SELECT username, email, password, full_name, password_expired_at, created_at FROM users
+SELECT username, email, password, full_name, password_expired_at, created_at, role FROM users
 WHERE username = $1 LIMIT 1
 `
 
@@ -61,6 +64,7 @@ func (q *Queries) GetUser(ctx context.Context, username string) (User, error) {
 		&i.FullName,
 		&i.PasswordExpiredAt,
 		&i.CreatedAt,
+		&i.Role,
 	)
 	return i, err
 }
@@ -71,9 +75,10 @@ SET
   password = coalesce($1, password), 
   full_name = coalesce($2, full_name), 
   email = coalesce($3, email),
-  password_expired_at = coalesce($4, password_expired_at)
-WHERE username = $5
-RETURNING username, email, password, full_name, password_expired_at, created_at
+  password_expired_at = coalesce($4, password_expired_at),
+  role = coalesce($5, role)
+WHERE username = $6
+RETURNING username, email, password, full_name, password_expired_at, created_at, role
 `
 
 type UpdateUserParams struct {
@@ -81,6 +86,7 @@ type UpdateUserParams struct {
 	FullName          pgtype.Text
 	Email             pgtype.Text
 	PasswordExpiredAt pgtype.Timestamptz
+	Role              pgtype.Text
 	Username          string
 }
 
@@ -90,6 +96,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		arg.FullName,
 		arg.Email,
 		arg.PasswordExpiredAt,
+		arg.Role,
 		arg.Username,
 	)
 	var i User
@@ -100,6 +107,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.FullName,
 		&i.PasswordExpiredAt,
 		&i.CreatedAt,
+		&i.Role,
 	)
 	return i, err
 }

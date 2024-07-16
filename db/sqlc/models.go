@@ -52,4 +52,5 @@ type User struct {
 	FullName          string
 	PasswordExpiredAt time.Time
 	CreatedAt         time.Time
+	Role              string
 }

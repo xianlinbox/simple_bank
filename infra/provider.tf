@@ -5,10 +5,16 @@ terraform {
       version = "~> 5.0"
     }
   }
+
+  backend "s3" {
+    bucket = "mybucket"
+    key    = "path/to/my/key"
+    region = "${var.region}"
+  }
 }
 
 # Configure the AWS Provider
 provider "aws" {
-  region = "us-east-2"
+  region = "${var.region}"
   profile = "tf-user"
 }

@@ -5,14 +5,14 @@ on:
     branches:
       - main
     paths:
-      - 'infra/**'
-      - '.github/workflows/infra.yaml'
+      - "infra/**"
+      - ".github/workflows/infra.yaml"
   pull_request:
     branches:
       - main
     paths:
-      - 'simple_bank/infra/**'
-      - '.github/workflows/infra.yaml'
+      - "simple_bank/infra/**"
+      - ".github/workflows/infra.yaml"
 
 jobs:
   terraform-plan:
@@ -29,9 +29,9 @@ jobs:
 
       - name: Terraform Init
         run: terraform init
-      
-      - name: Terraform Format 
-         run: terraform fmt -check -recursive
+
+      - name: Terraform Format
+        run: terraform fmt -check -recursive
 
       - name: Terraform Plan
         run: terraform plan

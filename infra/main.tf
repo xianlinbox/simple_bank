@@ -7,14 +7,13 @@ terraform {
   }
 
   backend "s3" {
-    bucket = "mybucket"
-    key    = "path/to/my/key"
-    region = "${var.region}"
+    bucket = "xianlinbox-simple-bank"
+    key    = "tf-state"
+    region = "us-east-1"
   }
 }
 
 # Configure the AWS Provider
 provider "aws" {
-  region = "${var.region}"
   profile = "tf-user"
 }

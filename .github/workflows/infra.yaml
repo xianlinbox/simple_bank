@@ -1,4 +1,4 @@
-name: CI
+name: Infra update
 
 on:
   push:

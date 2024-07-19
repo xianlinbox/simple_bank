@@ -9,7 +9,6 @@ on:
       - main
 env:
   GO_VERSION: 1.22.4
-  TF_VERSION: 1.0.0
 
 jobs:
   test:
@@ -63,7 +62,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: env.GO_VERSION
+          go-version: "$GO_VERSION"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4

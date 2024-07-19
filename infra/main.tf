@@ -8,7 +8,7 @@ terraform {
 
   backend "s3" {
     bucket = "xianlinbox-simple-bank"
-    key    = "tf-state"
+    key    = "tf-state/terraform.tfstate"
     region = "us-east-1"
   }
 }

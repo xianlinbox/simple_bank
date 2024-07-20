@@ -86,4 +86,4 @@ jobs:
 
       - name: Terraform Apply
         working-directory: infra
-        run: terraform apply "plan.output" --auto-approve
+        run: terraform apply --auto-approve plan.output

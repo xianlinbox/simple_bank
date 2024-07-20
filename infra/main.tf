@@ -15,5 +15,5 @@ terraform {
 
 # Configure the AWS Provider
 provider "aws" {
-  profile = "tf-user"
+  region = "us-east-2"
 }

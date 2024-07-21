@@ -48,7 +48,7 @@ jobs:
 
       - name: Terraform Plan
         working-directory: infra
-        run: terraform plan --out plan.output
+        run: TF_VAR_DB_PASSWORD=${{secrets.DB_PASSWORD}} terraform plan --out plan.output
 
       - uses: actions/upload-artifact@v4
         with:

@@ -17,7 +17,7 @@ resource "aws_db_instance" "simple_bank_db" {
   password            = data.aws_secretsmanager_secret_version.password
   skip_final_snapshot = true
 
-  depends_on = [ 
+  depends_on = [
     aws_secretsmanager_secret.simple-bank-db-password,
     aws_secretsmanager_secret_version.simple-bank-db-password
   ]

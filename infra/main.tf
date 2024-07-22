@@ -44,7 +44,7 @@ module "secrets" {
 
 resource "aws_db_instance" "simple_bank_db" {
   allocated_storage   = 10
-  db_name             = "simple-bank"
+  db_name             = "SimpleBank"
   engine              = "postgres"
   engine_version      = "16.3"
   instance_class      = "db.t3.micro"

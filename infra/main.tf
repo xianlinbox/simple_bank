@@ -46,7 +46,7 @@ resource "aws_db_instance" "simple_bank_db" {
   allocated_storage   = 10
   db_name             = "simple-bank"
   engine              = "postgres"
-  engine_version      = "16.0"
+  engine_version      = "16.3-R2"
   instance_class      = "db.t3.micro"
   username            = "root"
   password            = module.secrets.db_password_secret

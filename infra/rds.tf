@@ -14,7 +14,7 @@ resource "aws_db_instance" "simple_bank_db" {
   engine_version      = "16.0"
   instance_class      = "db.t3.micro"
   username            = "root"
-  password            = data.aws_secretsmanager_secret_version.password
+  password            = data.aws_secretsmanager_secret_version.simple-bank-db-password
   skip_final_snapshot = true
 
   depends_on = [

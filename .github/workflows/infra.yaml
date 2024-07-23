@@ -1,18 +1,18 @@
 name: Infra update
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "infra/**"
-      - ".github/workflows/infra.yaml"
-  pull_request:
-    branches:
-      - main
-    paths:
-      - "infra/**"
-      - ".github/workflows/infra.yaml"
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - "infra/**"
+  #     - ".github/workflows/infra.yaml"
+  # pull_request:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - "infra/**"
+  #     - ".github/workflows/infra.yaml"
   workflow_dispatch:
 
 env:
